@@ -3,13 +3,15 @@ declare global {
   interface Window {
     google: {
       maps: {
-        Map: new (
-          element: HTMLElement,
-          options: {
-            center: { lat: number; lng: number };
-            zoom: number;
-          }
-        ) => any;
+        Map: new (element: HTMLElement, options: {
+          center: { lat: number; lng: number };
+          zoom: number;
+        }) => any;
+        Marker: new (options: {
+          position: { lat: number; lng: number };
+          map: any;
+          title: string;
+        }) => any;
       };
     };
   }

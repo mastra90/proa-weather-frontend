@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import {
   Typography,
@@ -32,7 +31,6 @@ const Home = () => {
         setLoading(false);
       }
     };
-
     loadWeatherStations();
   }, []);
 
@@ -56,7 +54,7 @@ const Home = () => {
   return (
     <Box maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Typography variant="h3">Weather Stations Map</Typography>
-      <GoogleMaps />
+      <GoogleMaps weatherStations={weatherStations} />
       <Typography>Showing {weatherStations.length} weather stations</Typography>
       <Box>
         <Grid sx={{ maxWidth: 300 }}>
