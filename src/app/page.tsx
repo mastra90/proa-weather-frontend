@@ -6,11 +6,13 @@ import {
   Box,
   CircularProgress,
   Alert,
+  Grid,
   Card,
   CardContent,
-  Grid,
 } from "@mui/material";
-import { fetchWeatherStations, WeatherStations } from "@/services/api";
+import { fetchWeatherStations } from "@/services/api";
+import GoogleMaps from "./GoogleMaps";
+import { WeatherStations } from "./types";
 
 const Home = () => {
   const [weatherStations, setWeatherStations] = useState<WeatherStations[]>([]);
@@ -54,9 +56,8 @@ const Home = () => {
   return (
     <Box maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Typography variant="h3">Weather Stations Map</Typography>
-
+      <GoogleMaps />
       <Typography>Showing {weatherStations.length} weather stations</Typography>
-
       <Box>
         <Grid sx={{ maxWidth: 300 }}>
           {weatherStations.map((station) => (
