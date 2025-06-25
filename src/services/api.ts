@@ -20,7 +20,7 @@ export const getAllStations = async (): Promise<WeatherStations[]> => {
   }
 };
 
-// Get single weather station
+// Get single weather station latest measurements
 export const getStation = async (
   stationId: number
 ): Promise<Measurements[]> => {
@@ -30,6 +30,17 @@ export const getStation = async (
   } catch (error) {
     console.error("Error fetching latest measurements:", error);
     throw new Error("Failed to fetch latest measurements");
+  }
+};
+
+// Get all variables with long names and units
+export const getAllVariables = async () => {
+  try {
+    const response = await api.get("/weather-stations/variables");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching variables:", error);
+    throw new Error("Failed to fetch variables");
   }
 };
 

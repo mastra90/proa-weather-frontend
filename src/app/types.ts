@@ -33,6 +33,8 @@ export type Measurements = {
   variable_name: string;
   value: number;
   timestamp: Date;
+  long_name: string;
+  unit: string;
 };
 
 export type Variables = {

@@ -67,7 +67,7 @@ const GoogleMaps = ({
       <Card
         sx={{
           width: 320,
-          height: 450,
+          height: 500,
           display: "flex",
           flexDirection: "column",
         }}
@@ -86,7 +86,6 @@ const GoogleMaps = ({
           <CardContent sx={{ flexGrow: 1 }}>
             {selectedStation ? (
               <>
-                <Divider sx={{ mb: 2 }} />
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Typography variant="h6">{selectedStation.site}</Typography>
                   <Typography
@@ -104,22 +103,29 @@ const GoogleMaps = ({
                     {details.value}
                   </Typography>
                 ))}
+                <Divider sx={{ my: 2 }} />
                 {measurements.length ? (
                   measurements.map((measurement, index) => (
                     <Box key={index}>
-                      <Typography variant="body2">
-                        <strong>
-                          {measurement.variable_name === "GHI_inst"
-                            ? "Global Horizontal Irradiance"
-                            : measurement.variable_name === "AirT_inst"
-                            ? "Air Temperature (instantaneous)"
-                            : measurement.variable_name === "WS_avg"
-                            ? "Wind Speed (average)"
-                            : "Wind Direction (average)"}
-                          :{" "}
-                        </strong>
-                        {Number(measurement.value).toFixed(2)}
+                      <Typography
+                        sx={{ display: "flex", flexDirection: "column" }}
+                        variant="body2"
+                      >
+                        <strong>{measurement.long_name}</strong>
                         <br />
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontWeight: 300,
+                          bgcolor: "#C2FFEA",
+                          px: 1,
+                          my: 1,
+                          borderRadius: 1,
+                          width: "fit-content",
+                        }}
+                      >
+                        {Number(measurement.value).toFixed(2)}{" "}
+                        {measurement.unit}
                       </Typography>
                       <Typography
                         gutterBottom
