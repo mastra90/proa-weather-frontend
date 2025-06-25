@@ -17,16 +17,16 @@ const GoogleMaps = ({
 }) => {
   const mapRef = useRef(null);
   const [measurements, setMeasurements] = useState<Measurements[]>([]);
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [selectedStation, setSelectedStation] =
     useState<WeatherStations | null>(null);
 
   const StationDetails = selectedStation && [
-    { key: "Site: ", value: selectedStation.site },
-    { key: "Portfolio: ", value: selectedStation.portfolio },
-    { key: "State: ", value: selectedStation.state },
-    { key: "Longitude: ", value: selectedStation.longitude },
-    { key: "Latitude: ", value: selectedStation.latitude },
+    { key: <strong>Site: </strong>, value: selectedStation.site },
+    { key: <strong>Portfolio: </strong>, value: selectedStation.portfolio },
+    { key: <strong>State: </strong>, value: selectedStation.state },
+    { key: <strong>Longitude: </strong>, value: selectedStation.longitude },
+    { key: <strong>Latitude: </strong>, value: selectedStation.latitude },
   ];
   useEffect(() => {
     if (mapRef.current) {
@@ -55,9 +55,17 @@ const GoogleMaps = ({
       });
     }
   }, [weatherStations]);
+
+  const title = selectedStation
+    ? selectedStation.ws_name
+    : "Select a marker to see its details";
+  const subtitle = !weatherStations.length
+    ? ""
+    : `Showing ${weatherStations.length} weather stations`;
+
   return (
     <Box sx={{ display: "flex", gap: 2 }}>
-      <Box ref={mapRef} sx={{ height: 900, flex: 1 }} />
+      <Box ref={mapRef} sx={{ height: 900, flex: 1, borderRadius: 1 }} />
       <Card
         sx={{
           width: 320,
@@ -66,19 +74,17 @@ const GoogleMaps = ({
           flexDirection: "column",
         }}
       >
-        <CardHeader
-          title={"Weather Stations"}
-          subheader={"Showing X weather stations"}
-          avatar={<CellTower />}
-        />
+        <CardHeader title={title} subheader={subtitle} avatar={<CellTower />} />
         {loading ? (
-          <CircularProgress />
+          <CardContent sx={{ display: "flex", flexGrow: 1, height: 100 }}>
+            <CircularProgress sx={{ m: "auto" }} />
+          </CardContent>
         ) : (
           <CardContent sx={{ flexGrow: 1 }}>
             {selectedStation ? (
               <>
                 {StationDetails?.map((details, index) => (
-                  <Typography key={index}>
+                  <Typography key={index} variant="body2">
                     {details.key}
                     {details.value}
                   </Typography>
@@ -86,11 +92,27 @@ const GoogleMaps = ({
                 {measurements.length ? (
                   measurements.map((measurement, index) => (
                     <Box key={index}>
-                      <Typography>
-                        {measurement.variable_name}
-                        {": "}
-                        {measurement.value}
+                      <Typography variant="body2">
+                        <strong>
+                          {measurement.variable_name === "GHI_inst"
+                            ? "Global Horizontal Irradiance"
+                            : measurement.variable_name === "AirT_inst"
+                            ? "Air Temperature (instantaneous)"
+                            : measurement.variable_name === "WS_avg"
+                            ? "Wind Speed (average)"
+                            : "Wind Direction (average)"}
+                          :{" "}
+                        </strong>
+                        {Number(measurement.value).toFixed(2)}
                         <br />
+                      </Typography>
+                      <Typography
+                        gutterBottom
+                        color="gray"
+                        sx={{ fontSize: 12 }}
+                      >
+                        {"Last updated: "}
+                        {new Date(measurement.timestamp).toLocaleString()}
                       </Typography>
                     </Box>
                   ))
