@@ -10,9 +10,12 @@ const api = axios.create({
 });
 
 // Get all weather stations
-export const getAllStations = async (): Promise<WeatherStations[]> => {
+export const getAllStations = async (
+  states?: string[]
+): Promise<WeatherStations[]> => {
   try {
-    const response = await api.get("/weather-stations");
+    const params = states?.length ? `?states=${states.join(",")}` : "";
+    const response = await api.get(`/weather-stations${params}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching weather stations:", error);

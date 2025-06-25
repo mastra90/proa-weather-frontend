@@ -8,27 +8,44 @@ import {
   Button,
   CardActions,
   Divider,
+  FormControlLabel,
+  Checkbox,
+  Menu,
+  MenuItem,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { WeatherStations, Measurements } from "./types";
 import { getStation } from "@/services/api";
-import { CellTower, LocationOn } from "@mui/icons-material";
+import { CellTower, LocationOn, MoreVert } from "@mui/icons-material";
+
 const GoogleMaps = ({
   weatherStations,
+  allStations,
+  availableStates,
+  selectedStates,
+  onStateChange,
 }: {
   weatherStations: WeatherStations[];
+  allStations: WeatherStations[];
+  availableStates: string[];
+  selectedStates: string[];
+  onStateChange: (state: string) => void;
 }) => {
   const mapRef = useRef(null);
   const [measurements, setMeasurements] = useState<Measurements[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [selectedStation, setSelectedStation] =
     useState<WeatherStations | null>(null);
+  const [filterMenu, setFilterMenu] = useState<null | HTMLElement>(null);
 
   const StationDetails = selectedStation && [
     { key: <strong>Portfolio: </strong>, value: selectedStation.portfolio },
     { key: <strong>Longitude: </strong>, value: selectedStation.longitude },
     { key: <strong>Latitude: </strong>, value: selectedStation.latitude },
   ];
+
   useEffect(() => {
     if (mapRef.current) {
       const map = new window.google.maps.Map(mapRef.current, {
@@ -57,27 +74,64 @@ const GoogleMaps = ({
     }
   }, [weatherStations]);
 
-  const subtitle = !weatherStations.length
-    ? "Loading..."
-    : `Showing ${weatherStations.length} weather stations`;
-
   return (
     <Box sx={{ display: "flex", gap: 2 }}>
-      <Box ref={mapRef} sx={{ height: 900, flex: 1, borderRadius: 1 }} />
+      {/* Weather station details card */}
       <Card
         sx={{
-          width: 320,
-          height: 500,
+          width: 350,
+          height: 900,
           display: "flex",
           flexDirection: "column",
         }}
       >
+        {/* Card Header (with filter button) */}
         <CardHeader
           title={"Weather station details"}
-          subheader={subtitle}
+          subheader={`Showing ${weatherStations.length} weather stations`}
           avatar={<CellTower />}
+          action={
+            // Filter button
+            <Tooltip title={"Filter by state"}>
+              <IconButton onClick={(e) => setFilterMenu(e.currentTarget)}>
+                <MoreVert />
+              </IconButton>
+            </Tooltip>
+          }
           sx={{ mb: -2 }}
         />
+        {/* Filter Menu */}
+        <Menu
+          anchorEl={filterMenu}
+          open={Boolean(filterMenu)}
+          onClose={() => setFilterMenu(null)}
+        >
+          <Typography sx={{ mx: 2, my: 1, fontWeight: 500 }}>
+            Filter by state:
+          </Typography>
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            {availableStates.map((state) => {
+              const stateCount = allStations.filter(
+                (station) => station.state === state
+              ).length;
+              return (
+                <MenuItem key={state}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={selectedStates.includes(state)}
+                        onChange={() => onStateChange(state)}
+                        size="small"
+                      />
+                    }
+                    label={`${state} (${stateCount})`}
+                  />
+                </MenuItem>
+              );
+            })}
+          </Box>
+        </Menu>
+        {/* Card content */}
         {loading ? (
           <CardContent sx={{ display: "flex", flexGrow: 1, height: 100 }}>
             <CircularProgress sx={{ m: "auto" }} />
@@ -86,17 +140,26 @@ const GoogleMaps = ({
           <CardContent sx={{ flexGrow: 1 }}>
             {selectedStation ? (
               <>
+                {/* Weather station name */}
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Typography variant="h6">{selectedStation.site}</Typography>
-                  <Typography
-                    sx={{ bgcolor: "gainsboro", px: 1, ml: 1, borderRadius: 1 }}
-                    variant="body2"
-                  >
-                    {selectedStation.state}
-                  </Typography>
+                  <Tooltip title="State">
+                    <Typography
+                      sx={{
+                        bgcolor: "gainsboro",
+                        px: 1,
+                        ml: 1,
+                        borderRadius: 1,
+                      }}
+                      variant="body2"
+                    >
+                      {selectedStation.state}
+                    </Typography>
+                  </Tooltip>
                 </Box>
 
                 <Divider sx={{ my: 2 }} />
+                {/* Weather station details */}
                 {StationDetails?.map((details, index) => (
                   <Typography key={index} variant="body2">
                     {details.key}
@@ -104,14 +167,32 @@ const GoogleMaps = ({
                   </Typography>
                 ))}
                 <Divider sx={{ my: 2 }} />
-                {measurements.length ? (
+                {/* Weather station measurements */}
+                {!measurements.length || loading ? (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography gutterBottom color="gray">
+                      Loading...
+                    </Typography>
+                    <CircularProgress />
+                  </Box>
+                ) : (
                   measurements.map((measurement, index) => (
                     <Box key={index}>
                       <Typography
-                        sx={{ display: "flex", flexDirection: "column" }}
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          fontWeight: 600,
+                        }}
                         variant="body2"
                       >
-                        <strong>{measurement.long_name}</strong>
+                        {measurement.long_name}
                         <br />
                       </Typography>
                       <Typography
@@ -130,17 +211,13 @@ const GoogleMaps = ({
                       <Typography
                         gutterBottom
                         color="gray"
-                        sx={{ fontSize: 12 }}
+                        sx={{ fontSize: 12, mb: 2 }}
                       >
                         {"Last updated: "}
                         {new Date(measurement.timestamp).toLocaleString()}
                       </Typography>
                     </Box>
                   ))
-                ) : (
-                  <Typography variant="body2" color="text.secondary">
-                    No measurements available
-                  </Typography>
                 )}
               </>
             ) : (
@@ -181,6 +258,8 @@ const GoogleMaps = ({
           </Button>
         </CardActions>
       </Card>
+      {/*Google Maps component */}
+      <Box ref={mapRef} sx={{ height: 900, flex: 1, borderRadius: 1 }} />
     </Box>
   );
 };

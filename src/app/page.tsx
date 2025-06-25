@@ -1,21 +1,25 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Typography, Box, Alert, CircularProgress } from "@mui/material";
-import { getAllStations } from "@/services/api";
 import GoogleMaps from "./GoogleMaps";
 import { WeatherStations } from "./types";
+import { getAllStations } from "@/services/api";
 
 const Home = () => {
-  const [weatherStations, setWeatherStations] = useState<WeatherStations[]>([]);
+  const availableStates = ["VIC", "NSW", "QLD", "SA"];
+  const [allStations, setAllStations] = useState<WeatherStations[]>([]);
+  const [selectedStates, setSelectedStates] =
+    useState<string[]>(availableStates);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Get all stations once on initial page load
   useEffect(() => {
-    const loadWeatherStations = async () => {
+    const loadAllStations = async () => {
       try {
         setLoading(true);
-        const stations = await getAllStations();
-        setWeatherStations(stations);
+        const stations = await getAllStations(); // Get all stations
+        setAllStations(stations);
       } catch (err) {
         setError("Failed to load weather stations");
         console.error("Error loading weather stations:", err);
@@ -23,36 +27,58 @@ const Home = () => {
         setLoading(false);
       }
     };
-    loadWeatherStations();
+    loadAllStations();
   }, []);
 
-  if (!weatherStations)
-    return (
-      <Box
-        sx={{
-          m: "auto",
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          maxWidth: 1600,
-        }}
-      >
-        <CircularProgress sx={{ m: "auto" }} />
-      </Box>
+  // Filter stations in memory 
+  const filteredStations = useMemo(() => {
+    return selectedStates.length === 0
+      ? []
+      : allStations.filter((station) => selectedStates.includes(station.state));
+  }, [allStations, selectedStates]);
+
+  const handleStateChange = (state: string) => {
+    setSelectedStates((prev) =>
+      prev.includes(state) ? prev.filter((s) => s !== state) : [...prev, state]
     );
+  };
 
   if (error) {
     return (
       <Alert sx={{ m: 2, width: "fit-content" }} severity="error">
-        An error has occured: {error ? error : "Error message not found."}
+        An error has occurred: {error}
       </Alert>
     );
   }
 
   return (
     <Box sx={{ m: "auto", maxWidth: 1600 }}>
-      <Typography variant="h3">Weather Stations Map</Typography>
-      <GoogleMaps weatherStations={weatherStations} />
+      <Typography variant="h3" sx={{ my: 4 }}>
+        Weather Stations Map
+      </Typography>
+      {loading ? (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+            alignItems: "center",
+            p: 4,
+            height: 800,
+          }}
+        >
+          <CircularProgress sx={{ mb: 4 }} />
+          Loading...
+        </Box>
+      ) : (
+        <GoogleMaps
+          weatherStations={filteredStations}
+          allStations={allStations}
+          availableStates={availableStates}
+          selectedStates={selectedStates}
+          onStateChange={handleStateChange}
+        />
+      )}
     </Box>
   );
 };
