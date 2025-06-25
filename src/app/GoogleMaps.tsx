@@ -5,6 +5,9 @@ import {
   Typography,
   CircularProgress,
   CardHeader,
+  Button,
+  CardActions,
+  Divider,
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { WeatherStations, Measurements } from "./types";
@@ -22,9 +25,7 @@ const GoogleMaps = ({
     useState<WeatherStations | null>(null);
 
   const StationDetails = selectedStation && [
-    { key: <strong>Site: </strong>, value: selectedStation.site },
     { key: <strong>Portfolio: </strong>, value: selectedStation.portfolio },
-    { key: <strong>State: </strong>, value: selectedStation.state },
     { key: <strong>Longitude: </strong>, value: selectedStation.longitude },
     { key: <strong>Latitude: </strong>, value: selectedStation.latitude },
   ];
@@ -56,11 +57,8 @@ const GoogleMaps = ({
     }
   }, [weatherStations]);
 
-  const title = selectedStation
-    ? selectedStation.ws_name
-    : "Select a marker to see its details";
   const subtitle = !weatherStations.length
-    ? ""
+    ? "Loading..."
     : `Showing ${weatherStations.length} weather stations`;
 
   return (
@@ -74,7 +72,12 @@ const GoogleMaps = ({
           flexDirection: "column",
         }}
       >
-        <CardHeader title={title} subheader={subtitle} avatar={<CellTower />} />
+        <CardHeader
+          title={"Weather station details"}
+          subheader={subtitle}
+          avatar={<CellTower />}
+          sx={{ mb: -2 }}
+        />
         {loading ? (
           <CardContent sx={{ display: "flex", flexGrow: 1, height: 100 }}>
             <CircularProgress sx={{ m: "auto" }} />
@@ -83,6 +86,18 @@ const GoogleMaps = ({
           <CardContent sx={{ flexGrow: 1 }}>
             {selectedStation ? (
               <>
+                <Divider sx={{ mb: 2 }} />
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Typography variant="h6">{selectedStation.site}</Typography>
+                  <Typography
+                    sx={{ bgcolor: "gainsboro", px: 1, ml: 1, borderRadius: 1 }}
+                    variant="body2"
+                  >
+                    {selectedStation.state}
+                  </Typography>
+                </Box>
+
+                <Divider sx={{ my: 2 }} />
                 {StationDetails?.map((details, index) => (
                   <Typography key={index} variant="body2">
                     {details.key}
@@ -151,6 +166,14 @@ const GoogleMaps = ({
             )}
           </CardContent>
         )}
+        <CardActions sx={{ justifyContent: "flex-end" }}>
+          <Button
+            disabled={selectedStation && !loading ? false : true}
+            onClick={() => setSelectedStation(null)}
+          >
+            Clear selection
+          </Button>
+        </CardActions>
       </Card>
     </Box>
   );
