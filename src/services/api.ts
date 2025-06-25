@@ -9,8 +9,8 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Fetch all weather stations
-export const fetchWeatherStations = async (): Promise<WeatherStations[]> => {
+// Get all weather stations
+export const getAllStations = async (): Promise<WeatherStations[]> => {
   try {
     const response = await api.get("/weather-stations");
     return response.data;
@@ -20,8 +20,8 @@ export const fetchWeatherStations = async (): Promise<WeatherStations[]> => {
   }
 };
 
-// Fetch latest measurements for a specific weather station
-export const fetchLatestMeasurements = async (
+// Get single weather station
+export const getStation = async (
   stationId: number
 ): Promise<Measurements[]> => {
   try {

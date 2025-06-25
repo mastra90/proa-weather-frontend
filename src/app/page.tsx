@@ -1,15 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import {
-  Typography,
-  Box,
-  CircularProgress,
-  Alert,
-  Grid,
-  Card,
-  CardContent,
-} from "@mui/material";
-import { fetchWeatherStations } from "@/services/api";
+import { Typography, Box, Alert, CircularProgress } from "@mui/material";
+import { getAllStations } from "@/services/api";
 import GoogleMaps from "./GoogleMaps";
 import { WeatherStations } from "./types";
 
@@ -22,7 +14,7 @@ const Home = () => {
     const loadWeatherStations = async () => {
       try {
         setLoading(true);
-        const stations = await fetchWeatherStations();
+        const stations = await getAllStations();
         setWeatherStations(stations);
       } catch (err) {
         setError("Failed to load weather stations");
@@ -34,14 +26,20 @@ const Home = () => {
     loadWeatherStations();
   }, []);
 
-  if (loading) {
+  if (!weatherStations)
     return (
-      <Box>
-        <CircularProgress size={60} />
-        <Typography>Loading weather stations...</Typography>
+      <Box
+        sx={{
+          m: "auto",
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          maxWidth: 1600,
+        }}
+      >
+        <CircularProgress sx={{ m: "auto" }} />
       </Box>
     );
-  }
 
   if (error) {
     return (
@@ -52,31 +50,9 @@ const Home = () => {
   }
 
   return (
-    <Box maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Box sx={{ m: "auto", maxWidth: 1600 }}>
       <Typography variant="h3">Weather Stations Map</Typography>
       <GoogleMaps weatherStations={weatherStations} />
-      <Typography>Showing {weatherStations.length} weather stations</Typography>
-      <Box>
-        <Grid sx={{ maxWidth: 300 }}>
-          {weatherStations.map((station) => (
-            <Box key={station.id} sx={{ my: 2 }}>
-              <Card>
-                <CardContent>
-                  Site: {station.site}
-                  <br />
-                  Portfolio: {station.portfolio}
-                  <br />
-                  State: {station.state}
-                  <br />
-                  Latitude: {station.latitude}
-                  <br />
-                  Longitude: {station.longitude}
-                </CardContent>
-              </Card>
-            </Box>
-          ))}
-        </Grid>
-      </Box>
     </Box>
   );
 };
