@@ -75,12 +75,22 @@ const GoogleMaps = ({
   }, [weatherStations]);
 
   return (
-    <Box sx={{ display: "flex", gap: 2 }}>
+    <Box
+      sx={{
+        display: "flex",
+        gap: 2,
+        height: "100%",
+        maxHeight: 900,
+        maxWidth: 1600,
+        m: "auto",
+      }}
+    >
       {/* Weather station details card */}
       <Card
         sx={{
-          width: 350,
-          height: 900,
+          flex: 1,
+          minWidth: 300,
+          maxWidth: 350,
           display: "flex",
           flexDirection: "column",
         }}
@@ -259,7 +269,7 @@ const GoogleMaps = ({
         </CardActions>
       </Card>
       {/*Google Maps component */}
-      <Box ref={mapRef} sx={{ height: 900, flex: 1, borderRadius: 1 }} />
+      <Box ref={mapRef} sx={{ flex: 3, borderRadius: 1 }} />
     </Box>
   );
 };

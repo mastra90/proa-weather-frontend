@@ -30,7 +30,7 @@ const Home = () => {
     loadAllStations();
   }, []);
 
-  // Filter stations in memory 
+  // Filter stations in memory
   const filteredStations = useMemo(() => {
     return selectedStates.length === 0
       ? []
@@ -52,8 +52,26 @@ const Home = () => {
   }
 
   return (
-    <Box sx={{ m: "auto", maxWidth: 1600 }}>
-      <Typography variant="h3" sx={{ my: 4 }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        width: "100%",
+        px: 8,
+        pt: 2,
+        pb: 4,
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          pb: 2,
+          maxWidth: 1600,
+          width: "100%",
+          m: "auto",
+        }}
+      >
         Weather Stations Map
       </Typography>
       {loading ? (
@@ -63,21 +81,22 @@ const Home = () => {
             justifyContent: "center",
             flexDirection: "column",
             alignItems: "center",
-            p: 4,
-            height: 800,
+            flex: 1,
           }}
         >
           <CircularProgress sx={{ mb: 4 }} />
           Loading...
         </Box>
       ) : (
-        <GoogleMaps
-          weatherStations={filteredStations}
-          allStations={allStations}
-          availableStates={availableStates}
-          selectedStates={selectedStates}
-          onStateChange={handleStateChange}
-        />
+        <Box sx={{ flex: 1, minHeight: 0 }}>
+          <GoogleMaps
+            weatherStations={filteredStations}
+            allStations={allStations}
+            availableStates={availableStates}
+            selectedStates={selectedStates}
+            onStateChange={handleStateChange}
+          />
+        </Box>
       )}
     </Box>
   );
