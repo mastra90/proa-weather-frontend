@@ -2,6 +2,11 @@
 
 ### Interactive map displaying Australian weather stations with most recent measurement data.
 
+## Repos
+
+- https://github.com/mastra90/proa-weather-api <br>
+- https://github.com/mastra90/proa-weather-frontend
+
 ## Tech Stack
 
 **Frontend**: Next.js 15, React 19, Material-UI, TypeScript, Axios Google Maps API <br>
