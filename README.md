@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Weather Stations Map
 
-## Getting Started
+### Interactive map displaying Australian weather stations with most recent measurement data.
 
-First, run the development server:
+## Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**Frontend**: Next.js 15, React 19, Material-UI, TypeScript, Axios Google Maps API <br>
+**API**: NestJS, TypeORM <br>
+**DB**: PostgreSQL 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project Overview
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Data Storage**: Weather stations, variables, and measurements stored in PostgreSQL.
+2. **API Layer**: NestJS exposes REST endpoints for stations and measurements.
+3. **Map Display**: Google Maps renders station markers from long/lat data stored in db.
+4. **Interactions**: Click markers to fetch and display latest measurements in the card on the left of the map.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Key Features
 
-## Learn More
+1. Interactive Google Maps with weather station markers.
+2. State-based filtering: (VIC, NSW, QLD, SA) States that did not have weather stations were not included.
+3. Station details card dynamically renders a weather station's data and its most recent measurements.
+4. Measurements are displayed along with the time and date of the latest measurement.
+5. MUI used for styling. When no marker is selected a component renders which instructs the user to click a marker.
+6. A loading wheel displays when data is loading.
+7. Implemented error handling for when data cannot be fetched or if other errors occur.
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## API Endpoints
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. `GET /weather-stations` - Get all weather stations with optional state filter.
+2. `GET /weather-stations/:id/latest` - Get latest measurements for weather station data.
+3. `GET /weather-stations/variables` - Get measurement types for each weather station id.
